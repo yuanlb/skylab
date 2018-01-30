@@ -121,7 +121,7 @@ task SmartSeq2 {
       --single-cell-prior \
       "${output_name}_rsem.bam" \
       rsem/rsem_trans_index  \
-      "${output_name}_rsem"
+      "${output_name}_rsem" &
    
     ##### 
     # Run hisat2.HISAT2PE
