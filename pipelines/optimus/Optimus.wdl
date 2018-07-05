@@ -46,20 +46,24 @@ workflow Optimus {
   }
 
   scatter (index in indices) {
+
+    File r2_fastq_ = r2_fastq[index]
+    File r1_fastq_ = r1_fastq[index]
+
     call FastqToUBam.FastqToUBam {
       input:
-        fastq_file = r2_fastq[index],
+        fastq_file = r2_fastq_,
         sample_id = sample_id,
         fastq_suffix = fastq_suffix
     }
 
     # if the index is passed, attach it to the bam file
     if (defined(i1_fastq)) {
-      Array[File] non_optional_i1_fastq = select_first([i1_fastq])
+      File i1_fastq_ = i1_fastq[index]
       call Attach.Attach10xBarcodes as AttachBarcodes {
         input:
-          r1_fastq = r1_fastq[index],
-          i1_fastq = non_optional_i1_fastq[index],
+          r1_fastq = r1_fastq_,
+          i1_fastq = i1_fastq_,
           r2_unmapped_bam = FastqToUBam.bam_output,
           whitelist = whitelist
       }
@@ -69,7 +73,7 @@ workflow Optimus {
     if (!defined(i1_fastq)) {
       call Attach.Attach10xBarcodes as AttachBarcodesNoIndex {
         input:
-          r1_fastq = r1_fastq[index],
+          r1_fastq = r1_fastq_,
           r2_unmapped_bam = FastqToUBam.bam_output,
           whitelist = whitelist
       }
