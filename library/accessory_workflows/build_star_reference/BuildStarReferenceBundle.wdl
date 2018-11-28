@@ -2,6 +2,8 @@ task BuildStarReference{
   File ref_fasta
   File gtf_file
   String ref_name
+  Int machine_cpu_cores=16
+  Int machine_mem_gb=50
   command {
     mkdir star
     STAR --runMode genomeGenerate \
@@ -9,7 +11,7 @@ task BuildStarReference{
       --genomeFastaFiles ${ref_fasta} \
       --sjdbGTFfile ${gtf_file} \
       --sjdbOverhang 100 \
-      --runThreadN 16
+      --runThreadN ${machine_cpu_cores} \
     tar -cvf "${ref_name}.tar" star
   }
   output {
@@ -17,9 +19,9 @@ task BuildStarReference{
   }
   runtime {
     docker:"quay.io/humancellatlas/secondary-analysis-star:v0.2.2-2.5.3a-1.0.0"
-    memory: "50 GB"
+    memory: "${machine_mem_gb} GB"
     disks :"local-disk 100 HDD"
-    cpu:"16"
+    cpu: ${machine_mem_gb}
   }
 }
 
